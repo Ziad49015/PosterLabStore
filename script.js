@@ -1557,13 +1557,13 @@ function logoutUser() {
 
 function isPosterLabAdmin() {
   const ADMIN_EMAIL = "posterlab895@gmail.com";
-  const userEmail = (state.user && state.user.email ? state.user.email : "").toLowerCase().trim();
-  const hasAdminSession = localStorage.getItem("pls-admin-session") === "true";
-  const adminEmail = (localStorage.getItem("pls-admin-email") || "").toLowerCase().trim();
-
-  if (userEmail === ADMIN_EMAIL) return true;
-  if (hasAdminSession && adminEmail === ADMIN_EMAIL) return true;
-  return false;
+  // The user is on a guest account if they are not logged in (state.user is null/undefined).
+  // Guests or customer accounts MUST NOT see the admin icon.
+  // The admin icon should ONLY appear when the current store user is explicitly logged in as the admin.
+  if (typeof state === "undefined" || !state || !state.user || !state.user.email) {
+    return false;
+  }
+  return state.user.email.toLowerCase().trim() === ADMIN_EMAIL;
 }
 
 function updateHeaderAdminButton() {
@@ -1586,6 +1586,9 @@ function updateHeaderAdminButton() {
   } else if (adminBtn) {
     adminBtn.remove();
   }
+  // Ensure no duplicate or legacy gear button remains in DOM
+  const staleGear = document.getElementById('adminGearBtn');
+  if (staleGear) staleGear.remove();
 }
 
 function updateUserUI() {
@@ -4503,6 +4506,8 @@ window.saveCouponToFirestore = saveCouponToFirestore;
 window.deleteCouponFromFirestore = deleteCouponFromFirestore;
 window.syncProductsFromFirestore = syncProductsFromFirestore;
 window.syncCouponsFromFirestore = syncCouponsFromFirestore;
+window.isPosterLabAdmin = isPosterLabAdmin;
+window.updateHeaderAdminButton = updateHeaderAdminButton;
 
 // Hide loading screen once all initial content is rendered
 hideLoader();
