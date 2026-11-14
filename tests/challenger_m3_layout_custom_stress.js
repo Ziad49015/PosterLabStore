@@ -1068,8 +1068,8 @@ console.log('\n--- OBJECTIVE 4: Cart Frame Integrity & WhatsApp / Checkout Seria
   
   check('4.4.1 WhatsApp EN includes "Black frame" customization line', whatsappMsgEn.includes('20x30 cm | Black frame'));
   check('4.4.2 WhatsApp EN includes "White frame" customization line', whatsappMsgEn.includes('30x40 cm | White frame'));
-  check('4.4.3 WhatsApp EN formats Transparent frame as "Transparent / Frameless"', whatsappMsgEn.includes('40x50 cm | Transparent / Frameless'));
-  check('4.4.4 WhatsApp EN formats None frame as "Transparent / Frameless"', whatsappMsgEn.includes('50x70 cm | Transparent / Frameless'));
+  check('4.4.3 WhatsApp EN formats Transparent frame as "Frameless"', whatsappMsgEn.includes('40x50 cm | Frameless'));
+  check('4.4.4 WhatsApp EN formats None frame as "Frameless"', whatsappMsgEn.includes('50x70 cm | Frameless'));
   check('4.4.5 WhatsApp EN message is free of undefined, null, or NaN artifacts',
     !whatsappMsgEn.includes('undefined') && !whatsappMsgEn.includes('null') && !whatsappMsgEn.includes('NaN'));
 
@@ -1080,8 +1080,8 @@ console.log('\n--- OBJECTIVE 4: Cart Frame Integrity & WhatsApp / Checkout Seria
   check('4.5.1 WhatsApp AR includes Arabic title "طلب جديد من متجر بوستر لاب"', whatsappMsgAr.includes('طلب جديد من متجر بوستر لاب'));
   check('4.5.2 WhatsApp AR formats Black frame as "إطار أسود"', whatsappMsgAr.includes('إطار أسود'));
   check('4.5.3 WhatsApp AR formats White frame as "إطار أبيض"', whatsappMsgAr.includes('إطار أبيض'));
-  check('4.5.4 WhatsApp AR formats Transparent frame as "شفاف / بدون إطار"', whatsappMsgAr.includes('شفاف / بدون إطار'));
-  check('4.5.5 WhatsApp AR formats None frame as "شفاف / بدون إطار"', whatsappMsgAr.includes('شفاف / بدون إطار'));
+  check('4.5.4 WhatsApp AR formats Transparent frame as "بدون إطار"', whatsappMsgAr.includes('بدون إطار'));
+  check('4.5.5 WhatsApp AR formats None frame as "بدون إطار"', whatsappMsgAr.includes('بدون إطار'));
   check('4.5.6 WhatsApp AR message is free of undefined, null, or NaN artifacts',
     !whatsappMsgAr.includes('undefined') && !whatsappMsgAr.includes('null') && !whatsappMsgAr.includes('NaN'));
 
@@ -1119,19 +1119,19 @@ check('5.1.2 styles.css defines #fbfbfb solid fallback background',
 check('5.1.3 styles.css defines dark theme lightbox override with white gradient preserved',
   /:root\[data-theme="dark"\]\s*\.detail-main-image[\s\S]*?linear-gradient\(180deg,\s*#fbfbfb/i.test(stylesCss));
 
-// 5.2 Frame Borders and Elevation Shadows
-check('5.2.1 .detail-main-image.frame-black img has 12px solid #141414 border',
-  /\.detail-main-image\.frame-black\s+img[\s\S]*?border:\s*12px\s+solid\s+#141414/i.test(stylesCss));
-check('5.2.2 .frame-black img has three-tiered elevation shadow',
-  /\.frame-black\s+img[\s\S]*?box-shadow:\s*0\s+14px\s+28px/i.test(stylesCss));
-check('5.2.3 .detail-main-image.frame-white img has 12px solid #ffffff border',
-  /\.detail-main-image\.frame-white\s+img[\s\S]*?border:\s*12px\s+solid\s+#ffffff/i.test(stylesCss));
-check('5.2.4 .frame-white img defines outline keyline for off-white wall separation',
-  /\.frame-white\s+img[\s\S]*?outline:\s*1px\s+solid/i.test(stylesCss));
+// 5.2 Poster Images Display As-Is (Frames already inside the artwork)
+check('5.2.1 .detail-main-image.frame-black img has border: none (displays picture as-is)',
+  /\.detail-main-image\.frame-black\s+img[\s\S]*?border:\s*none/i.test(stylesCss));
+check('5.2.2 .frame-black img defines natural elevation shadow',
+  /\.frame-black\s+img[\s\S]*?box-shadow:\s*0\s+14px\s+34px/i.test(stylesCss));
+check('5.2.3 .detail-main-image.frame-white img has border: none (displays picture as-is)',
+  /\.detail-main-image\.frame-white\s+img[\s\S]*?border:\s*none/i.test(stylesCss));
+check('5.2.4 .frame-white img defines clean elevation shadow',
+  /\.frame-white\s+img[\s\S]*?box-shadow:\s*0\s+14px\s+34px/i.test(stylesCss));
 check('5.2.5 .frame-transparent img and .frame-none img have border: none',
   /\.frame-transparent\s+img,\s*\.frame-none\s+img[\s\S]*?border:\s*none/i.test(stylesCss));
 check('5.2.6 .frame-transparent img defines paper lift shadow',
-  /\.frame-transparent\s+img[\s\S]*?box-shadow:\s*0\s+8px\s+16px/i.test(stylesCss));
+  /\.frame-transparent\s+img[\s\S]*?box-shadow:\s*0\s+14px\s+34px/i.test(stylesCss));
 
 // 5.3 Frame Swatch Dots
 check('5.3.1 styles.css defines base .dot dimensions (14px circular)',
@@ -1145,9 +1145,9 @@ check('5.3.4 styles.css defines .dot.transparent / .dot.none diagonal slash grad
 check('5.3.5 styles.css defines selected state tactile scale 1.12x',
   /\.variant-options\s+button\.is-selected\s+\.dot\s*\{[\s\S]*?transform:\s*scale\(1\.12\)/i.test(stylesCss));
 
-// 5.4 Responsive Mobile Frame Scaling
-check('5.4.1 styles.css defines responsive frame border scaling (9px) for mobile screens <= 640px',
-  /@media\s*\(max-width:\s*640px\)[\s\S]*?\.detail-main-image\.frame-black\s+img[\s\S]*?(?:border|border-width):\s*(?:9px\s+solid|9px)/i.test(stylesCss));
+// 5.4 Responsive Mobile Display
+check('5.4.1 styles.css defines border: none for mobile screens <= 640px',
+  /@media\s*\(max-width:\s*640px\)[\s\S]*?\.detail-main-image\.frame-black\s+img[\s\S]*?border:\s*none/i.test(stylesCss));
 
 // =============================================================================
 // OBJECTIVE 6: Production Minified Distribution Parity

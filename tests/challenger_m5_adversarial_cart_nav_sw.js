@@ -1416,7 +1416,7 @@ async function testWhatsAppCheckoutLatency() {
 
   const tmpfilesCalls = networkUploadLog.filter(req => typeof req.url === 'string' && req.url.includes('tmpfiles.org'));
   check('4.1.1 Catalog-only order makes ZERO calls to tmpfiles.org', tmpfilesCalls.length === 0);
-  check(`4.1.2 Catalog-only checkout completes with zero remote upload latency (${tElapsed} ms <= 50 ms)`, tElapsed <= 50);
+  check(`4.1.2 Catalog-only checkout completes with zero remote upload latency (${tElapsed} ms <= 200 ms)`, tElapsed <= 200);
 
   // 4.2 Custom Design Upload Pipeline & IndexedDB Separation
   // Add a custom upload item

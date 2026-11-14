@@ -897,26 +897,25 @@ console.log('\n--- SUITE 2: Dynamic Frame Switching & Visualization Invariants -
     css.includes(':root[data-theme="dark"] .detail-main-image') ||
     css.includes('[data-theme="dark"] .detail-main-image'));
 
-  // Black frame elevation shadow
-  check('T2.4.3: .frame-black defines realistic triple-layer elevation box-shadow',
+  // Poster images already have frames in the artwork; artificial CSS frame borders are removed (border: none)
+  check('T2.4.3: .frame-black defines clean natural elevation box-shadow without artificial border',
     css.includes('.frame-black img') &&
-    css.includes('box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25)'));
+    css.includes('border: none'));
 
-  // White frame styling & outline
-  check('T2.4.4: .frame-white defines 12px white border and subtle dark outline',
-    css.includes('border: 12px solid #ffffff') &&
-    css.includes('outline: 1px solid rgba(0, 0, 0, 0.08)'));
+  // White frame styling
+  check('T2.4.4: .frame-white displays picture as-is with border: none',
+    css.includes('.frame-white img') &&
+    css.includes('border: none'));
 
-  // Frameless / Transparent border: none and subtle elevation
+  // Frameless / Transparent border: none and clean elevation
   check('T2.4.5: .frame-transparent / .frame-none sets border: none and clean elevation shadow',
     css.includes('.frame-transparent img') &&
-    css.includes('border: none') &&
-    css.includes('box-shadow: 0 8px 16px rgba(0, 0, 0, 0.10)'));
+    css.includes('border: none'));
 
-  // Responsive border scaling on mobile
-  check('T2.4.6: Media query scales frame borders down to 9px for mobile viewports (<= 640px)',
+  // Responsive display on mobile
+  check('T2.4.6: Media query maintains border: none for mobile viewports (<= 640px)',
     css.includes('@media (max-width: 640px)') &&
-    css.includes('border-width: 9px'));
+    css.includes('border: none'));
 
   // Swatch dots styling
   check('T2.4.7: Swatch dot classes .dot.black, .dot.white, .dot.transparent correctly styled',

@@ -33,8 +33,8 @@ const SESSION_SCROLL_KEY = "pls-scroll";
 const frameOptions = {
   Black: { label: "Black frame", price: 0, class: "frame-black" },
   White: { label: "White frame", price: 0, class: "frame-white" },
-  Transparent: { label: "Transparent / Frameless", price: 0, class: "frame-transparent" },
-  None: { label: "Transparent / Frameless", price: 0, class: "frame-transparent", hint: "Poster only, no frame" }
+  Transparent: { label: "Frameless", price: 0, class: "frame-transparent" },
+  None: { label: "Frameless", price: 0, class: "frame-transparent", hint: "Poster only, no frame" }
 };
 
 const translations = {
@@ -165,7 +165,7 @@ const translations = {
     faqQ2: "What sizes are available?",
     faqA2: "We offer four sizes: 20x30 cm, 30x40 cm, 40x50 cm, and 50x70 cm. Prices vary by size — larger sizes cost more. All sizes can be framed or unframed.",
     faqQ3: "What frame options do you offer?",
-    faqA3: "We offer three options: black frame, white frame, and transparent / frameless. Frames are included in the price at no extra charge. All frames are high-quality and ready to hang.",
+    faqA3: "We offer three options: black frame, white frame, and frameless. Frames are included in the price at no extra charge. All frames are high-quality and ready to hang.",
     faqQ4: "Can I upload my own design?",
     faqA4: "Yes! Use the \"Upload Your Custom Design\" product to upload any photo or design. We'll print it as a high-quality framed poster. You can upload JPG, PNG, or any common image format.",
     faqQ5: "What payment methods do you accept?",
@@ -336,7 +336,7 @@ const translations = {
     faqQ2: "ما المقاسات المتاحة؟",
     faqA2: "نوفر أربع مقاسات: 20x30 سم، 30x40 سم، 40x50 سم، و50x70 سم. الأسعار تختلف حسب المقاس — المقاسات الأكبر أغلى. كل المقاسات تنفع مع أو بدون إطار.",
     faqQ3: "ما خيارات الإطارات؟",
-    faqA3: "نوفر ثلاثة خيارات: إطار أسود، إطار أبيض، وشفاف / بدون إطار. الإطارات مشمولة في السعر بدون أي تكلفة إضافية. كل الإطارات عالية الجودة وجاهزة للتعليق.",
+    faqA3: "نوفر ثلاثة خيارات: إطار أسود، إطار أبيض، وبدون إطار. الإطارات مشمولة في السعر بدون أي تكلفة إضافية. كل الإطارات عالية الجودة وجاهزة للتعليق.",
     faqQ4: "هل أقدر أرفع تصميمي الخاص؟",
     faqA4: "نعم! استخدم منتج \"ارفع تصميمك الخاص\" لرفع أي صورة أو تصميم. سنطبعه كبوستر مؤطر عالي الجودة. تقدر ترفع JPG أو PNG أو أي صيغة صور شائعة.",
     faqQ5: "ما طرق الدفع المتاحة؟",
@@ -1404,7 +1404,7 @@ function sceneImageForIndex(index = 0) {
 function getFrameOptionLabel(frameKey) {
   const currentLang = state.lang || "en";
   if (currentLang === "ar") {
-    if (frameKey === "None" || frameKey === "Transparent") return "شفاف / بدون إطار";
+    if (frameKey === "None" || frameKey === "Transparent") return "بدون إطار";
     if (frameKey === "Black") return "إطار أسود";
     if (frameKey === "White") return "إطار أبيض";
     if (frameKey === "Wood") return "إطار خشبي";
@@ -1557,13 +1557,31 @@ function logoutUser() {
 
 function isPosterLabAdmin() {
   const ADMIN_EMAIL = "posterlab895@gmail.com";
-  // The user is on a guest account if they are not logged in (state.user is null/undefined).
-  // Guests or customer accounts MUST NOT see the admin icon.
-  // The admin icon should ONLY appear when the current store user is explicitly logged in as the admin.
-  if (typeof state === "undefined" || !state || !state.user || !state.user.email) {
-    return false;
+  // 1. Check active user in state
+  if (typeof state !== "undefined" && state && state.user && state.user.email) {
+    return state.user.email.toLowerCase().trim() === ADMIN_EMAIL;
   }
-  return state.user.email.toLowerCase().trim() === ADMIN_EMAIL;
+  // 2. Check localStorage store session
+  try {
+    const raw = localStorage.getItem("pls-session");
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (u && u.email && u.email.toLowerCase().trim() === ADMIN_EMAIL) {
+        return true;
+      }
+    }
+  } catch (_) {}
+  // 3. Check Firebase Auth user
+  try {
+    if (typeof firebase !== "undefined" && firebase.auth && firebase.auth().currentUser) {
+      const cur = firebase.auth().currentUser;
+      if (cur.email && cur.email.toLowerCase().trim() === ADMIN_EMAIL) {
+        return true;
+      }
+    }
+  } catch (_) {}
+  // Guest accounts or non-admin customers must never see the admin icon
+  return false;
 }
 
 function updateHeaderAdminButton() {
@@ -1578,17 +1596,23 @@ function updateHeaderAdminButton() {
       adminBtn.href = 'admin/panel.html';
       adminBtn.title = (state && state.lang === 'ar') ? 'لوحة التحكم' : 'Admin Panel';
       adminBtn.setAttribute('aria-label', 'Admin Panel');
-      adminBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
+      adminBtn.innerHTML = '<span class="admin-gear-colored" style="transform:translateY(-1px);display:inline-block;font-size:1.15rem;line-height:1" aria-hidden="true">⚙️</span>';
       const accountBtn = headerActions.querySelector('[data-account-btn]');
       if (accountBtn) headerActions.insertBefore(adminBtn, accountBtn);
       else headerActions.appendChild(adminBtn);
+    } else {
+      // Ensure it displays the single colored gear icon
+      adminBtn.innerHTML = '<span class="admin-gear-colored" style="transform:translateY(-1px);display:inline-block;font-size:1.15rem;line-height:1" aria-hidden="true">⚙️</span>';
     }
   } else if (adminBtn) {
     adminBtn.remove();
   }
-  // Ensure no duplicate or legacy gear button remains in DOM
-  const staleGear = document.getElementById('adminGearBtn');
-  if (staleGear) staleGear.remove();
+  // Purge any duplicate or legacy gear button elements so only one colored gear can ever exist
+  document.querySelectorAll('#adminGearBtn, .header-admin-gear').forEach(el => el.remove());
+  const allAdminLinks = headerActions.querySelectorAll('.header-admin-link');
+  for (let i = 1; i < allAdminLinks.length; i++) {
+    allAdminLinks[i].remove();
+  }
 }
 
 function updateUserUI() {

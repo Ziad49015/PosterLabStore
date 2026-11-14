@@ -468,10 +468,10 @@ async function runAdversarialSuite() {
     assert.ok(waMsg.includes('Uploaded File: my_logo.png'), 'Uploaded file 1 name missing');
 
     assert.ok(waMsg.includes('*Product 3:*'), 'Product 3 missing');
-    assert.ok(waMsg.includes('40x50 cm | Transparent / Frameless'), 'Product 3 customization missing');
+    assert.ok(waMsg.includes('40x50 cm | Frameless'), 'Product 3 customization missing');
 
     assert.ok(waMsg.includes('*Product 4:* Upload Your Custom Design'), 'Product 4 name missing');
-    assert.ok(waMsg.includes('50x70 cm | Transparent / Frameless'), 'Product 4 customization missing');
+    assert.ok(waMsg.includes('50x70 cm | Frameless'), 'Product 4 customization missing');
     assert.ok(waMsg.includes('Uploaded File: wedding.png'), 'Uploaded file 2 name missing');
 
     // 3. Verify Financial lines
