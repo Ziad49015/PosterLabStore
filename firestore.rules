@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Orders: allow all operations
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+    // Products: allow all operations (admin writes via admin panel)
+    match /products/{productId} {
+      allow read, write: if true;
+    }
+    // Coupons: allow all operations (admin writes via admin panel)
+    match /coupons/{couponCode} {
+      allow read, write: if true;
+    }
+    // Users: allow all operations
+    match /users/{email} {
+      allow read, write: if true;
+      match /{document=**} {
+        allow read, write: if true;
+      }
+    }
+    // Health check ping
+    match /_health/{docId} {
+      allow read, write: if true;
+    }
+  }
+}
